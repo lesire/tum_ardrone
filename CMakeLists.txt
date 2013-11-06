@@ -1,33 +1,36 @@
-#
-# Author: Jakob Engel <jajuengel@gmail.com>
-#
- 
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+# Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
+# Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
+cmake_minimum_required(VERSION 2.8.3)
+project(tum_ardrone)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-set(ROS_BUILD_TYPE RelWithDebInfo)
+# Load catkin and all dependencies required for this package
+find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure sensor_msgs std_srvs message_generation)
 
-rosbuild_init()
+add_message_files(
+	DIRECTORY msg
+	FILES
+	filter_state.msg
+)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+generate_dynamic_reconfigure_options(
+  cfg/AutopilotParams.cfg
+  cfg/GUIParams.cfg
+  cfg/StateestimationParams.cfg
+)
+add_custom_target(cfg ALL
+	DEPENDS ${PROJECT_NAME}_gencfg)
 
+## Generate added messages and services with any dependencies listed here
+generate_messages(DEPENDENCIES geometry_msgs std_msgs)
 
-# ------------------- add dynamic reconfigure api ------------------------------------
-rosbuild_find_ros_package(dynamic_reconfigure)
-include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
-gencfg()
+# catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
+catkin_package(DEPENDS roscpp sensor_msgs std_srvs CATKIN_DEPENDS message_runtime)
 
+# add catkin includes
+include_directories(${catkin_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/cfg/cpp)
 
-
+# add Boost_INCLUDE_DIRS
+include_directories(${Boost_INCLUDE_DIRS})
 
 # --------------------------- stateestimation & PTAM --------------------------------
 # set header ans source files
@@ -102,11 +105,11 @@ set(PTAM_LIBRARIES GL glut cvd GVars3 blas lapack)
 add_definitions(-DKF_REPROJ)
 
 # build!
-rosbuild_add_executable(drone_stateestimation ${STATEESTIMATION_SOURCE_FILES} ${STATEESTIMATION_HEADER_FILES})
-rosbuild_add_compile_flags(drone_stateestimation -D_LINUX -D_REENTRANT -Wall  -O3 -march=nocona -msse3) 
-target_link_libraries(drone_stateestimation ${PTAM_LIBRARIES})
+add_executable(drone_stateestimation ${STATEESTIMATION_SOURCE_FILES})
+target_link_libraries(drone_stateestimation ${PTAM_LIBRARIES} ${catkin_LIBRARIES})
 
-
+#install Rules
+install(TARGETS drone_stateestimation RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 # ------------------------- autopilot & KI -----------------------------------------
 # set header ans source files
@@ -128,8 +131,11 @@ set(AUTOPILOT_HEADER_FILES
 )
 
 # build!
-rosbuild_add_executable(drone_autopilot ${AUTOPILOT_SOURCE_FILES} ${AUTOPILOT_HEADER_FILES})
+add_executable(drone_autopilot ${AUTOPILOT_SOURCE_FILES})
+target_link_libraries(drone_autopilot ${catkin_LIBRARIES})
 
+#install Rules
+install(TARGETS drone_autopilot RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 
 # ---------------------------- GUI --------------------------------------------------
@@ -166,14 +172,6 @@ QT4_WRAP_CPP(GUI_HEADER_FILES_HPP ${GUI_HEADER_FILES})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # build!
-rosbuild_add_executable(drone_gui ${GUI_SOURCE_FILES} ${GUI_RESOURCE_FILES_CPP} ${GUI_UI_FILES_HPP} ${GUI_HEADER_FILES_HPP})
-target_link_libraries(drone_gui ${QT_LIBRARIES} cvd)
+add_executable(drone_gui ${GUI_SOURCE_FILES} ${GUI_RESOURCE_FILES_CPP} ${GUI_UI_FILES_HPP} ${GUI_HEADER_FILES_HPP})
+target_link_libraries(drone_gui ${QT_LIBRARIES} cvd ${catkin_LIBRARIES})
 
-
-
-
-# ---------------------------- Messages & Services --------------------------------------------------
-#uncomment if you have defined messages
-rosbuild_genmsg()
-#uncomment if you have defined services
-rosbuild_gensrv()

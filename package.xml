@@ -1,0 +1,41 @@
+<package>
+  <name>tum_ardrone</name>
+  <version>1.0.0</version>
+  <description>Autonomous flight with the AR.Drone using PTAM</description>
+  <maintainer email="jajuengel@gmail.com">Jakob Engel</maintainer>
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/tum_ardrone</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Jakob Engel</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_srvs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>qt4</build_depend>
+  <build_depend>libblas-dev</build_depend>
+  <build_depend>liblapack-dev</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>roscpp</run_depend>
+  <run_depend>ardrone_autonomy</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+
+  <export>
+    <cpp cflags="-I${prefix}/srv/cpp -I${prefix}/msg/cpp"/>
+  </export>
+
+</package>
