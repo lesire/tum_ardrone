@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tum_ardrone)
 
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure sensor_msgs std_srvs message_generation)
+find_package(catkin REQUIRED COMPONENTS roslib roscpp dynamic_reconfigure sensor_msgs std_srvs message_generation tf cv_bridge)
 
 add_message_files(
 	DIRECTORY msg
@@ -31,6 +31,29 @@ include_directories(${catkin_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/cfg/cpp)
 
 # add Boost_INCLUDE_DIRS
 include_directories(${Boost_INCLUDE_DIRS})
+
+# --------------------------- 3rd party ---------------------------------------------
+add_custom_target(libcvd
+	COMMAND make
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdparty/libcvd
+	DEPENDS libgvars3)
+
+add_custom_target(libgvars3
+	COMMAND make
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/thirdparty/gvars3)
+
+# set required libs and headers
+include_directories(
+  ${PROJECT_SOURCE_DIR}/thirdparty/TooN/include 
+  ${PROJECT_SOURCE_DIR}/thirdparty/libcvd/include 
+  ${PROJECT_SOURCE_DIR}/thirdparty/gvars3/include 
+)  
+
+link_directories(
+  ${PROJECT_SOURCE_DIR}/thirdparty/libcvd/lib 
+  ${PROJECT_SOURCE_DIR}/thirdparty/gvars3/lib 
+)
+set(PTAM_LIBRARIES GL glut cvd GVars3 blas lapack)
 
 # --------------------------- stateestimation & PTAM --------------------------------
 # set header ans source files
@@ -90,23 +113,12 @@ set(STATEESTIMATION_HEADER_FILES
   src/stateestimation/PTAM/VideoSource.h
 )
 
-# set required libs and headers
-include_directories(
-  ${PROJECT_SOURCE_DIR}/thirdparty/TooN/include 
-  ${PROJECT_SOURCE_DIR}/thirdparty/libcvd/include 
-  ${PROJECT_SOURCE_DIR}/thirdparty/gvars3/include 
-)  
-
-link_directories(
-  ${PROJECT_SOURCE_DIR}/thirdparty/libcvd/lib 
-  ${PROJECT_SOURCE_DIR}/thirdparty/gvars3/lib 
-)
-set(PTAM_LIBRARIES GL glut cvd GVars3 blas lapack)
-add_definitions(-DKF_REPROJ)
-
 # build!
+add_definitions(-DKF_REPROJ -D_LINUX -D_REENTRANT -Wall -O3 -march=nocona -msse3)
 add_executable(drone_stateestimation ${STATEESTIMATION_SOURCE_FILES})
-target_link_libraries(drone_stateestimation ${PTAM_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(drone_stateestimation ${PTAM_LIBRARIES} ${catkin_LIBRARIES}
+	cvd)
+add_dependencies(drone_stateestimation libcvd)
 
 #install Rules
 install(TARGETS drone_stateestimation RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
@@ -132,7 +144,8 @@ set(AUTOPILOT_HEADER_FILES
 
 # build!
 add_executable(drone_autopilot ${AUTOPILOT_SOURCE_FILES})
-target_link_libraries(drone_autopilot ${catkin_LIBRARIES})
+target_link_libraries(drone_autopilot ${catkin_LIBRARIES} cvd)
+add_dependencies(drone_autopilot libcvd)
 
 #install Rules
 install(TARGETS drone_autopilot RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

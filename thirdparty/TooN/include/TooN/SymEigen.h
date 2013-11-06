@@ -34,6 +34,7 @@
 #include <cassert>
 #include <cmath>
 #include <complex>
+#include <queue>
 #include <TooN/lapack.h>
 
 #include <TooN/TooN.h>
@@ -181,11 +182,11 @@ namespace Internal{
             ev =  makeVector(A_plus_B, -A_plus_B/2 + A_minus_B * sqrt(3)/2, -A_plus_B/2 - A_minus_B * sqrt(3)/2) - Ones * a/3;
 
             if(ev[0] > ev[1])
-                swap(ev[0], ev[1]);
+                std::swap(ev[0], ev[1]);
             if(ev[1] > ev[2])
-                swap(ev[1], ev[2]);
+                std::swap(ev[1], ev[2]);
             if(ev[0] > ev[1])
-                swap(ev[0], ev[1]);
+                std::swap(ev[0], ev[1]);
 
             //calculate the eigenvectors
             eig[0][0]=a12 * a23 - a13 * (a22 - ev[0]);

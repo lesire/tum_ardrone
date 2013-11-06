@@ -1,3 +1,6 @@
+#ifndef TOON_INCLUDE_DEBUG_H
+#define TOON_INCLUDE_DEBUG_H
+
 namespace TooN {
 
 namespace Internal
@@ -106,3 +109,6 @@ namespace Internal
 }
 
 }
+
+#endif // TOON_INCLUDE_DEBUG_H
+

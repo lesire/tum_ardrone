@@ -40,6 +40,7 @@
 #include <TooN/internal/config.hh>
 #include <TooN/internal/typeof.hh>
 #include <TooN/internal/deprecated.hh>
+#include <TooN/internal/debug.hh>
 
 #if defined TOON_NDEBUG || defined NDEBUG
 	#define TOON_NDEBUG_MISMATCH
