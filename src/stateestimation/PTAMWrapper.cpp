@@ -504,7 +504,7 @@ void PTAMWrapper::HandleFrame()
 
 
 	// ----------------------------- Take KF? -----------------------------------
-	if(!mapLocked && isVeryGood && (forceKF || mpMap->vpKeyFrames.size() < maxKF || maxKF <= 1))
+	if(!mapLocked && isVeryGood && (forceKF || int(mpMap->vpKeyFrames.size()) < maxKF || maxKF <= 1))
 	{
 		mpTracker->TakeKF(forceKF);
 		forceKF = false;

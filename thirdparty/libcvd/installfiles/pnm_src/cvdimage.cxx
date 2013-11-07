@@ -271,7 +271,7 @@ Huff* create_tree(const array<int,256>& h, vector<Huff*>& symbols)
 	{
 		if(h[i])
 		{
-			Huff s = {0,0,0,i,h[i]};
+			Huff s = {0,0,0,i,h[int(i)]};
 			Huff* ss = new Huff(s);
 			table.insert(ss);
 			symbols.push_back(ss);
