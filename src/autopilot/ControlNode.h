@@ -37,9 +37,9 @@ class PTAMWrapper;
 class KIProcedure;
 
 
-struct ControlNode
+class ControlNode
 {
-private:
+protected:
 	ros::Subscriber dronepose_sub;
 	ros::Publisher vel_pub;
 	ros::Subscriber tum_ardrone_sub;

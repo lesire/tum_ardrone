@@ -27,6 +27,8 @@
 #include "boost/thread.hpp"
 #include <signal.h>
 
+#include "ActionControlNode.h"
+
 // this global var is used in getMS(ros::Time t) to convert to a consistent integer timestamp used internally pretty much everywhere.
 // kind of an artifact from Windows-Version, where only that was available / used.
 unsigned int ros_header_timestamp_base = 0;
@@ -39,7 +41,7 @@ int main(int argc, char **argv)
 
   ROS_INFO("Started TUM ArDrone Autopilot Node.");
 
-  ControlNode controlNode;
+  ActionControlNode controlNode;
 
   dynamic_reconfigure::Server<tum_ardrone::AutopilotParamsConfig> srv;
   dynamic_reconfigure::Server<tum_ardrone::AutopilotParamsConfig>::CallbackType f;

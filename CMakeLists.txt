@@ -23,6 +23,8 @@ add_service_files(
 	FILES
 	SetReference.srv
 	SetMaxControl.srv
+	SetInitialReachDistance.srv
+	SetStayWithinDist.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs)
