@@ -17,6 +17,14 @@ add_message_files(
 	FILES
 	filter_state.msg
 )
+
+add_service_files(
+	DIRECTORY srv
+	FILES
+	SetReference.srv
+	SetMaxControl.srv
+)
+
 generate_messages(DEPENDENCIES std_msgs)
 
 generate_dynamic_reconfigure_options(
@@ -103,7 +111,8 @@ set(STATEESTIMATION_HEADER_FILES
 # set header ans source files
 set(AUTOPILOT_SOURCE_FILES         
 	src/autopilot/main_autopilot.cpp  
-	src/autopilot/ControlNode.cpp
+	src/autopilot/ControlNode.cpp 
+	src/autopilot/ActionControlNode.cpp
 	src/autopilot/DroneController.cpp
 	src/autopilot/KI/KILand.cpp
 	src/autopilot/KI/KIAutoInit.cpp
@@ -163,7 +172,7 @@ target_link_libraries(drone_stateestimation ${PTAM_LIBRARIES} ${catkin_LIBRARIES
 
 ## Autopilot build
 add_executable(drone_autopilot ${AUTOPILOT_SOURCE_FILES} ${AUTOPILOT_HEADER_FILES})
-add_dependencies(drone_autopilot AutopilotParams drone_stateestimation)
+add_dependencies(drone_autopilot AutopilotParams drone_stateestimation tum_ardrone_gencpp)
 target_link_libraries(drone_autopilot ${catkin_LIBRARIES})
 
 ## GUI build
