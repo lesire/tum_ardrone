@@ -78,7 +78,10 @@ protected:
 	double parameter_StayWithinDist;
 
 
-
+	// services
+	void startControl();
+	void stopControl();
+	void clearCommands();
 
 	void popNextCommand(const tum_ardrone::filter_stateConstPtr statePtr);
 	void reSendInfo();

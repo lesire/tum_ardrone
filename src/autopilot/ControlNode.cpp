@@ -33,9 +33,9 @@
 #include <string>
 
 // include KI's
-#include "KI/KIAutoInit.h";
-#include "KI/KIFlyTo.h";
-#include "KI/KILand.h";
+#include "KI/KIAutoInit.h"
+#include "KI/KIFlyTo.h"
+#include "KI/KILand.h"
 #include "KI/KIProcedure.h"
 
 
@@ -155,11 +155,9 @@ void ControlNode::popNextCommand(const tum_ardrone::filter_stateConstPtr statePt
 		ROS_INFO("executing command: %s",command.c_str());
 
 
-		int p;
+		unsigned int p;
 		char buf[100];
 		float parameters[10];
-
-		int pi;
 
 		// replace macros
 		if((p = command.find("$POSE$")) != std::string::npos)
@@ -312,29 +310,11 @@ void ControlNode::comCb(const std_msgs::StringConstPtr str)
 		std::string cmd =str->data.substr(2,str->data.length()-2);
 
 		if(cmd.length() == 4 && cmd.substr(0,4) == "stop")
-		{
-			isControlling = false;
-			publishCommand("u l Autopilot: Stop Controlling");
-			ROS_INFO("STOP CONTROLLING!");
-		}
+			stopControl();		
 		else if(cmd.length() == 5 && cmd.substr(0,5) == "start")
-		{
-			isControlling = true;
-			publishCommand("u l Autopilot: Start Controlling");
-			ROS_INFO("START CONTROLLING!");
-		}
+			startControl();
 		else if(cmd.length() == 13 && cmd.substr(0,13) == "clearCommands")
-		{
-			pthread_mutex_lock(&commandQueue_CS);
-			commandQueue.clear();						// clear command queue.
-			controller.clearTarget();					// clear current controller target
-			if(currentKI != NULL) delete currentKI;	// destroy & delete KI.
-			currentKI = NULL;
-			pthread_mutex_unlock(&commandQueue_CS);
-
-			publishCommand("u l Autopilot: Cleared Command Queue");
-			ROS_INFO("Cleared Command Queue!");
-		}
+			clearCommands();
 		else
 		{
 			pthread_mutex_lock(&commandQueue_CS);
@@ -348,6 +328,29 @@ void ControlNode::comCb(const std_msgs::StringConstPtr str)
 	{
 		this->toogleLogging();
 	}
+}
+
+void ControlNode::startControl() {
+	isControlling = true;
+	publishCommand("u l Autopilot: Start Controlling");
+	ROS_INFO("START CONTROLLING!");
+}
+
+void ControlNode::stopControl() {
+	isControlling = false;
+	publishCommand("u l Autopilot: Stop Controlling");
+	ROS_INFO("STOP CONTROLLING!");
+}
+
+void ControlNode::clearCommands() {
+	pthread_mutex_lock(&commandQueue_CS);
+	commandQueue.clear();						// clear command queue.
+	controller.clearTarget();					// clear current controller target
+	if(currentKI != NULL) delete currentKI;	// destroy & delete KI.
+	currentKI = NULL;
+	pthread_mutex_unlock(&commandQueue_CS);
+	publishCommand("u l Autopilot: Cleared Command Queue");
+	ROS_INFO("Cleared Command Queue!");
 }
 
 void ControlNode::Loop()
@@ -426,7 +429,7 @@ void ControlNode::sendControlToDrone(ControlCommand cmd)
 	cmdT.linear.y = -cmd.roll;
 
 	// assume that while actively controlling, the above for will never be equal to zero, so i will never hover.
-	cmdT.angular.x = cmdT.angular.x = 0;
+	cmdT.angular.x = 0;
 
 	if(isControlling)
 	{

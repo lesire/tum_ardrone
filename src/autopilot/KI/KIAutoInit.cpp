@@ -83,6 +83,8 @@ bool KIAutoInit::update(const tum_ardrone::filter_stateConstPtr statePtr)
 		case DONE:
 			node->sendControlToDrone(controller->update(statePtr));
 			return true;
+		default:
+			break;
 		}
 		return true;	// should never happen....
 	}
