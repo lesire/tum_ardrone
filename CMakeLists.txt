@@ -4,8 +4,11 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tum_ardrone)
 
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS ardrone_autonomy)
-find_package(catkin REQUIRED roscpp roslib tf dynamic_reconfigure cv_bridge sensor_msgs std_srvs std_msgs geometry_msgs message_generation)
+find_package(catkin REQUIRED COMPONENTS
+	roscpp roslib tf dynamic_reconfigure cv_bridge
+	sensor_msgs std_srvs std_msgs geometry_msgs message_generation
+	genmsg actionlib_msgs actionlib
+	ardrone_autonomy)
 
 # System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
@@ -28,7 +31,15 @@ add_service_files(
 	SetStayTime.srv
 )
 
-generate_messages(DEPENDENCIES std_msgs)
+add_action_files(
+	DIRECTORY action
+	FILES
+	AutoInit.action
+	Empty.action
+	Move.action
+)
+
+generate_messages(DEPENDENCIES std_msgs actionlib_msgs)
 
 generate_dynamic_reconfigure_options(
 	cfg/AutopilotParams.cfg
@@ -38,7 +49,7 @@ generate_dynamic_reconfigure_options(
 
 # catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
 catkin_package(
-	CATKIN_DEPENDS ardrone_autonomy dynamic_reconfigure roscpp message_runtime
+	CATKIN_DEPENDS ardrone_autonomy dynamic_reconfigure roscpp message_runtime actionlib_msgs actionlib
 	DEPENDS qt4 libblas-dev liblapack-dev
 )
 

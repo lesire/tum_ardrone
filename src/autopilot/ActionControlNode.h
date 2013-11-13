@@ -10,9 +10,16 @@
 #include "tum_ardrone/SetStayTime.h"
 #include "std_srvs/Empty.h"
 
+#include "tum_ardrone/AutoInitAction.h"
+#include "tum_ardrone/EmptyAction.h"
+#include "tum_ardrone/MoveAction.h"
+#include <actionlib/server/simple_action_server.h>
+
 class ActionControlNode : public ControlNode
 {
 protected:
+	// SERVICES
+
 	ros::ServiceServer setReference_;
 	ros::ServiceServer setMaxControl_;
 	ros::ServiceServer setInitialReachDistance_;
@@ -35,13 +42,29 @@ protected:
 	bool hover(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
 	bool lockScaleFP(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
 
+	// ACTIONS
+	std::string currentAction;
+
+	typedef actionlib::SimpleActionServer<tum_ardrone::AutoInitAction> AutoInitServer;
+	AutoInitServer *autoInit_, *autoTakeover_;
+	void autoInit();
+	void autoTakeover();
+
+	typedef actionlib::SimpleActionServer<tum_ardrone::EmptyAction> EmptyServer;
+	EmptyServer *takeoff_, *land_;
+	void land();
+	void takeoff();
+
+	typedef actionlib::SimpleActionServer<tum_ardrone::MoveAction> MoveServer;
+	MoveServer *goto_, *moveBy_, *moveByRel_;
+	void goTo();
+	void moveBy();
+	void moveByRel();
+
 public:
 	ActionControlNode();
 	~ActionControlNode();
-
-	// main pose-estimation loop
-	void Loop();
-
+	virtual void updateControl(const tum_ardrone::filter_stateConstPtr);
 };
 
 #endif /* __ACTIONCONTROLNODE_H */

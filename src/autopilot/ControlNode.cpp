@@ -137,6 +137,8 @@ void ControlNode::droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr)
 // assumes propery of command queue lock exists (!)
 void ControlNode::popNextCommand(const tum_ardrone::filter_stateConstPtr statePtr)
 {
+	this->state = statePtr;
+
 	// should actually not happen., but to make shure:
 	// delete existing KI.
 	if(currentKI != NULL)

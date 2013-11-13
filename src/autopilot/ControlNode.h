@@ -83,6 +83,7 @@ protected:
 	void stopControl();
 	void clearCommands();
 	virtual void updateControl(const tum_ardrone::filter_stateConstPtr);
+	tum_ardrone::filter_stateConstPtr state;
 
 	void popNextCommand(const tum_ardrone::filter_stateConstPtr statePtr);
 	void reSendInfo();

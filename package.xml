@@ -29,6 +29,8 @@
   <build_depend>rosconsole</build_depend>
   <build_depend>roscpp_serialization</build_depend>
   <build_depend>rostime</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>actionlib_msgs</build_depend>
 
   <!-- Dependencies needed after this package is compiled. -->
   <run_depend>ardrone_autonomy</run_depend>
@@ -47,5 +49,7 @@
   <run_depend>rosconsole</run_depend>
   <run_depend>roscpp_serialization</run_depend>
   <run_depend>rostime</run_depend>
+  <run_depend>actionlib</run_depend>
+  <run_depend>actionlib_msgs</run_depend>
 
 </package>
