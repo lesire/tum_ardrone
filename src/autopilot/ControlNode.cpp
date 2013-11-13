@@ -101,6 +101,13 @@ ControlNode::~ControlNode()
 
 }
 
+void ControlNode::updateControl(const tum_ardrone::filter_stateConstPtr statePtr) {
+	if (currentKI->update(statePtr)) {
+		delete currentKI;
+		currentKI = NULL;
+	}
+}
+
 pthread_mutex_t ControlNode::commandQueue_CS = PTHREAD_MUTEX_INITIALIZER;
 void ControlNode::droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr)
 {
@@ -114,14 +121,8 @@ void ControlNode::droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr)
 
 	// if there is no current KI now, we obviously have no current goal -> send drone hover
 	if(currentKI != NULL)
-	{
 		// let current KI control.
-		if(currentKI->update(statePtr) && commandQueue.size() > 0)
-		{
-			delete currentKI;
-			currentKI = NULL;
-		}
-	}
+		this->updateControl(statePtr);
 	else if(isControlling)
 	{
 		sendControlToDrone(hoverCommand);
@@ -429,7 +430,7 @@ void ControlNode::sendControlToDrone(ControlCommand cmd)
 	cmdT.linear.y = -cmd.roll;
 
 	// assume that while actively controlling, the above for will never be equal to zero, so i will never hover.
-	cmdT.angular.x = 0;
+	cmdT.angular.x = cmdT.angular.y = 0;
 
 	if(isControlling)
 	{
