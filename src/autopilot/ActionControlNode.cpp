@@ -156,18 +156,18 @@ ActionControlNode::ActionControlNode()
 	lockScaleFP_ = nh_.advertiseService("drone_autopilot/lockScaleFP", 
 		&ActionControlNode::lockScaleFP, this);
 	// ACTIONS
-	autoInit_ = new AutoInitServer(nh_, "drone_autopilot/autoInit", false);
-	autoInit_->registerGoalCallback(boost::bind(&ActionControlNode::autoInit, this));
-	autoInit_->start();
-	autoTakeover_ = new AutoInitServer(nh_, "drone_autopilot/autoTakeover", false);
-	autoTakeover_->registerGoalCallback(boost::bind(&ActionControlNode::autoTakeover, this));
-	autoTakeover_->start();
 	takeoff_ = new EmptyServer(nh_, "drone_autopilot/takeoff", false);
 	takeoff_->registerGoalCallback(boost::bind(&ActionControlNode::takeoff, this));
 	takeoff_->start();
 	land_ = new EmptyServer(nh_, "drone_autopilot/land", false);
 	land_->registerGoalCallback(boost::bind(&ActionControlNode::land, this));
 	land_->start();
+	autoInit_ = new AutoInitServer(nh_, "drone_autopilot/autoInit", false);
+	autoInit_->registerGoalCallback(boost::bind(&ActionControlNode::autoInit, this));
+	autoInit_->start();
+	autoTakeover_ = new AutoInitServer(nh_, "drone_autopilot/autoTakeover", false);
+	autoTakeover_->registerGoalCallback(boost::bind(&ActionControlNode::autoTakeover, this));
+	autoTakeover_->start();
 	goto_ = new MoveServer(nh_, "drone_autopilot/goto", false);
 	goto_->registerGoalCallback(boost::bind(&ActionControlNode::goTo, this));
 	goto_->start();
