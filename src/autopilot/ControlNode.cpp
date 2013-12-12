@@ -126,7 +126,7 @@ void ControlNode::droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr)
 	else if(isControlling)
 	{
 		sendControlToDrone(hoverCommand);
-		ROS_WARN("Autopilot is Controlling, but there is no KI -> sending HOVER");
+		ROS_DEBUG("Autopilot is Controlling, but there is no KI -> sending HOVER");
 	}
 
 

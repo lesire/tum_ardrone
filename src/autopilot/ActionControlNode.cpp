@@ -9,6 +9,7 @@ using namespace tum_ardrone;
 
 bool ActionControlNode::setReference(SetReference::Request& req, SetReference::Response& res)
 {
+	ROS_INFO("calling service setReference");
 	parameter_referenceZero = DronePosition(TooN::makeVector(req.x, req.y, req.z),
 		req.heading);	
 	res.status = true;
@@ -17,6 +18,7 @@ bool ActionControlNode::setReference(SetReference::Request& req, SetReference::R
 
 bool ActionControlNode::setMaxControl(SetMaxControl::Request& req, SetMaxControl::Response& res)
 {
+	ROS_INFO("calling service setMaxControl");
 	parameter_MaxControl = req.speed;
 	res.status = true;
 	return true;
@@ -24,44 +26,52 @@ bool ActionControlNode::setMaxControl(SetMaxControl::Request& req, SetMaxControl
 
 bool ActionControlNode::setInitialReachDist(SetInitialReachDistance::Request& req, SetInitialReachDistance::Response& res)
 {
+	ROS_INFO("calling service setInitialReachDist");
 	parameter_InitialReachDist = req.distance;
 	res.status = true;
 	return true;
 }
 
 bool ActionControlNode::setStayWithinDist(SetStayWithinDist::Request& req, SetStayWithinDist::Response& res) {
+	ROS_INFO("calling service setStayWithinDist");
 	parameter_StayWithinDist = req.distance;
 	res.status = true;
 	return true;
 }
 
 bool ActionControlNode::setStayTime(SetStayTime::Request& req, SetStayTime::Response& res) {
+	ROS_INFO("calling service setStayTime");
 	parameter_StayTime = req.duration;
 	res.status = true;
 	return true;
 }
 
 bool ActionControlNode::start(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res) {
+	ROS_INFO("calling service start");
 	this->startControl();
 	return true;
 }
 
 bool ActionControlNode::stop(std_srvs::Empty::Request&, std_srvs::Empty::Response&) {
+	ROS_INFO("calling service stop");
 	this->stopControl();
 	return true;
 }
 
 bool ActionControlNode::clear(std_srvs::Empty::Request&, std_srvs::Empty::Response&) {
+	ROS_INFO("calling service clearCommands");
 	this->clearCommands();
 	return true;
 }
 
 bool ActionControlNode::hover(std_srvs::Empty::Request&, std_srvs::Empty::Response&) {
+	ROS_INFO("calling service hover");
 	this->sendControlToDrone(hoverCommand);
 	return true;
 }
 
 bool ActionControlNode::lockScaleFP(std_srvs::Empty::Request&, std_srvs::Empty::Response&) {
+	ROS_INFO("calling service lockScaleFP");
 	this->publishCommand("p lockScaleFP");
 	return true;
 }
