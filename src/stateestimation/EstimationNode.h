@@ -24,6 +24,7 @@
 
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
+#include "geometry_msgs/PoseStamped.h"
 #include "sensor_msgs/Image.h"
 #include "tf/tfMessage.h"
 #include "tf/transform_listener.h"
@@ -61,6 +62,7 @@ private:
 
 	// output
 	ros::Publisher dronepose_pub;
+	ros::Publisher pose_pub;
 
 	ros::NodeHandle nh_;
 
@@ -78,7 +80,7 @@ private:
 	std::string output_channel;
 	std::string video_channel;
 	std::string command_channel;
-
+	std::string pose_channel;
 
 
 	// for navdata time-smoothing

@@ -27,6 +27,7 @@
 #include "tf/tfMessage.h"
 #include "tf/transform_listener.h"
 #include "tf/transform_broadcaster.h"
+#include "tf/transform_datatypes.h"
 #include "std_msgs/Empty.h"
 #include "std_srvs/Empty.h"
 #include "../HelperFunctions.h"
@@ -51,12 +52,13 @@ pthread_mutex_t EstimationNode::logPTAMRaw_CS = PTHREAD_MUTEX_INITIALIZER;
 
 EstimationNode::EstimationNode()
 {
-    navdata_channel = nh_.resolveName("ardrone/navdata");
-    control_channel = nh_.resolveName("cmd_vel");
-    output_channel = nh_.resolveName("ardrone/predictedPose");
-    video_channel = nh_.resolveName("ardrone/image_raw");
-    command_channel = nh_.resolveName("tum_ardrone/com");
+    	navdata_channel = nh_.resolveName("ardrone/navdata");
+    	control_channel = nh_.resolveName("cmd_vel");
+    	output_channel = nh_.resolveName("ardrone/predictedPose");
+    	video_channel = nh_.resolveName("ardrone/image_raw");
+    	command_channel = nh_.resolveName("tum_ardrone/com");
 	packagePath = ros::package::getPath("tum_ardrone");
+    	pose_channel = nh_.resolveName("ardrone/pose");
 
 	std::string val;
 	float valFloat = 0;
@@ -84,7 +86,8 @@ EstimationNode::EstimationNode()
 	vel_sub          = nh_.subscribe(control_channel,10, &EstimationNode::velCb, this);
 	vid_sub          = nh_.subscribe(video_channel,10, &EstimationNode::vidCb, this);
 
-	dronepose_pub	   = nh_.advertise<tum_ardrone::filter_state>(output_channel,1);
+	dronepose_pub	   = nh_.advertise<tum_ardrone::filter_state>(output_channel, 1);
+	pose_pub	   = nh_.advertise<geometry_msgs::PoseStamped>(pose_channel, 1);
 
 	tum_ardrone_pub	   = nh_.advertise<std_msgs::String>(command_channel,50);
 	tum_ardrone_sub	   = nh_.subscribe(command_channel,50, &EstimationNode::comCb, this);
@@ -281,6 +284,14 @@ void EstimationNode::Loop()
 		  // publish!
 		  dronepose_pub.publish(s);
 
+		  geometry_msgs::PoseStamped pose;
+		  pose.header.frame_id = "ardrone_base_link";
+		  pose.header.stamp = ros::Time::now();
+		  pose.pose.position.x = s.x;
+		  pose.pose.position.y = s.y;
+		  pose.pose.position.z = s.z;
+		  pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(s.roll, s.pitch, s.yaw);
+		  pose_pub.publish(pose);
 
 		  // --------- if need be: add fake PTAM obs --------
 		  // if PTAM updates hang (no video or e.g. init), filter is never permanently rolled forward -> queues get too big.

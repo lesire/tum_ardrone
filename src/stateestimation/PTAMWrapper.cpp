@@ -302,7 +302,7 @@ void PTAMWrapper::HandleFrame()
 
 	TooN::Vector<6> PTAMResultSE3TwistOrg = PTAMResultSE3.ln();
 
-	node->publishTf(mpTracker->GetCurrentPose(),mimFrameTimeRos_workingCopy, mimFrameSEQ_workingCopy,"cam_front");
+	node->publishTf(mpTracker->GetCurrentPose(),mimFrameTimeRos_workingCopy, mimFrameSEQ_workingCopy,"ardrone_base_link");
 
 
 	// 1. multiply from left by frontToDroneNT.
